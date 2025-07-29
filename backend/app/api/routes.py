@@ -3,6 +3,7 @@ from app.schemas.brave_news import UserInput, AIAnalysisResponse
 from app.services.brave_news import (
     generate_search_query,
     fetch_brave_news,
+    parse_analysis_response,
     perform_ai_analysis,
 )
 import json
@@ -11,7 +12,7 @@ import re
 router = APIRouter()
 
 
-@router.post("/full-analysis", response_model=AIAnalysisResponse)
+@router.post("/full-analysis")
 async def full_analysis(user_input: UserInput):
     try:
         generated_query_text = await generate_search_query(user_input.text)
@@ -35,7 +36,9 @@ async def full_analysis(user_input: UserInput):
 
         analysis_result = await perform_ai_analysis(user_input.text, merged_description)
 
-        return {"analysis": analysis_result}
+        parsed_analysis = parse_analysis_response(analysis_result)
+
+        return parsed_analysis
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
