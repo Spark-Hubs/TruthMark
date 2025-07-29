@@ -1,18 +1,40 @@
 import httpx
-from bs4 import BeautifulSoup
-
 from app.core.config import settings
-from app.schemas.brave_news import BraveNewsResponse, NewsResult
+from app.schemas.brave_news import BraveNewsResponse
 
-BRAVE_API_URL = "https://api.search.brave.com/res/v1/news/search"
+
+async def generate_search_query(text: str) -> str:
+    payload = {
+        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+        "messages": [
+            {
+                "role": "user",
+                "content": (
+                    f"To validate this claim is true or not generate a search query so I can put google and get info about it : {text}.\n\n"
+                    "Response Format :\n"
+                    '{\nquery : "query text here"\n}\n\n'
+                    "DO NOT ADD OTHER EXPLAINATION"
+                ),
+            }
+        ],
+        "stream": False,
+    }
+
+    headers = {
+        "Authorization": f"Bearer {settings.together_api_key}",
+        "Content-Type": "application/json",
+    }
+
+    async with httpx.AsyncClient(timeout=settings.ai_timeout) as client:
+        response = await client.post(
+            settings.together_api_url, headers=headers, json=payload
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
 
 
 async def fetch_brave_news(query: str) -> BraveNewsResponse:
-    headers = {
-        "Accept": "application/json",
-        "Accept-Encoding": "gzip",
-        "x-subscription-token": settings.brave_api_key,
-    }
     params = {
         "q": query,
         "search_lang": "tr",
@@ -21,43 +43,50 @@ async def fetch_brave_news(query: str) -> BraveNewsResponse:
         "count": 10,
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(BRAVE_API_URL, headers=headers, params=params)
+    headers = {
+        "x-subscription-token": settings.brave_api_key,
+    }
+
+    async with httpx.AsyncClient(timeout=settings.ai_timeout) as client:
+        response = await client.get(
+            settings.brave_news_api_url, params=params, headers=headers
+        )
         response.raise_for_status()
         data = response.json()
 
-    brave_news = BraveNewsResponse(**data)
-
-    brave_news.results = await enrich_news_with_scraped_content(brave_news.results)
-
-    return brave_news
-
-
-async def scrape_article_content(url: str) -> str:
-    """Scrapes the article content from the given URL using httpx and BeautifulSoup."""
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            soup = BeautifulSoup(resp.text, "html.parser")
-
-            paragraphs = soup.find_all("p")
-            article_text = "\n".join(
-                p.get_text(strip=True) for p in paragraphs if p.get_text(strip=True)
-            )
-            return article_text[:1000]
-    except Exception:
-        return ""
+    results = []
+    for item in data.get("results", []):
+        results.append(
+            {
+                "title": item.get("title"),
+                "url": item.get("url"),
+                "description": item.get("description"),
+            }
+        )
+    return BraveNewsResponse(results=results)
 
 
-async def enrich_news_with_scraped_content(
-    news_results: list[NewsResult],
-) -> list[NewsResult]:
-    enriched_results = []
+async def perform_ai_analysis(query: str, combined_text: str) -> str:
+    payload = {
+        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Now based on given query and info validate the query:\n\nQuery: {query}\nInfo: {combined_text}",
+            }
+        ],
+        "stream": False,
+    }
 
-    for news in news_results:
-        content = await scrape_article_content(str(news.url))
-        enriched_news = news.model_copy(update={"scraped_content": content})
-        enriched_results.append(enriched_news)
+    headers = {
+        "Authorization": f"Bearer {settings.together_api_key}",
+        "Content-Type": "application/json",
+    }
 
-    return enriched_results
+    async with httpx.AsyncClient(timeout=settings.ai_timeout) as client:
+        response = await client.post(
+            settings.together_api_url, headers=headers, json=payload
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
