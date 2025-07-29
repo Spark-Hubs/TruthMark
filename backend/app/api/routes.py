@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.brave_news import UserInput, AIAnalysisResponse
+from app.schemas.brave_news import UserInput
 from app.services.brave_news import (
     generate_search_query,
     fetch_brave_news,
