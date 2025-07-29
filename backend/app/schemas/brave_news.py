@@ -1,10 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, HttpUrl
 
 
 class Thumbnail(BaseModel):
-    src: Optional[HttpUrl] = None
+    src: Optional[Union[HttpUrl, str]] = None
 
 
 class NewsResult(BaseModel):
