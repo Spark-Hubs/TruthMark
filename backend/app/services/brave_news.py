@@ -5,7 +5,7 @@ from app.schemas.brave_news import BraveNewsResponse
 
 async def generate_search_query(text: str) -> str:
     payload = {
-        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+        "model": "meta-llama/llama-3.3-70b-instruct:free",
         "messages": [
             {
                 "role": "user",
@@ -68,7 +68,7 @@ async def fetch_brave_news(query: str) -> BraveNewsResponse:
 
 async def perform_ai_analysis(query: str, combined_text: str) -> str:
     payload = {
-        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+        "model": "meta-llama/llama-3.3-70b-instruct:free",
         "messages": [
             {
                 "role": "user",
