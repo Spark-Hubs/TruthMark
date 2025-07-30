@@ -1,3 +1,11 @@
+/* Prevent text selection on double-click for better UX */
+.truthmark-no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .truthmark-popup {
   position: fixed;
   top: 20px;

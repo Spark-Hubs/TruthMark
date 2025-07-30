@@ -39,45 +39,27 @@
       color: #34495e;
       font-weight: 500;
     }
-    input {
+    select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 6px;
       box-sizing: border-box;
       font-size: 14px;
+      background-color: white;
     }
-    input:focus {
+    select:focus {
       outline: none;
       border-color: #3498db;
       box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
     }
-    .button-group {
-      display: flex;
-      gap: 10px;
+    .shortcuts {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #7f8c8d;
     }
-    button {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .primary-btn {
-      background-color: #3498db;
-      color: white;
-    }
-    .primary-btn:hover {
-      background-color: #2980b9;
-    }
-    .secondary-btn {
-      background-color: #ecf0f1;
-      color: #2c3e50;
-    }
-    .secondary-btn:hover {
-      background-color: #bdc3c7;
+    .shortcuts p {
+      margin: 5px 0;
     }
     .status {
       margin-top: 10px;
@@ -93,14 +75,6 @@
       background-color: #fadbd8;
       color: #e74c3c;
     }
-    .shortcuts {
-      margin-top: 15px;
-      font-size: 13px;
-      color: #7f8c8d;
-    }
-    .shortcuts p {
-      margin: 5px 0;
-    }
   </style>
 </head>
 <body>
@@ -111,21 +85,7 @@
     
     <div class="settings-section">
       <div class="input-group">
-        <label for="apiKey">Perplexity API Key</label>
-        <input type="password" id="apiKey" placeholder="Enter your API key">
-      </div>
-      
-      <div class="button-group">
-        <button id="saveKey" class="primary-btn">Save API Key</button>
-        <button id="testKey" class="secondary-btn">Test Connection</button>
-      </div>
-      
-      <div id="status" class="status" style="display: none;"></div>
-    </div>
-
-    <div class="settings-section">
-      <div class="input-group">
-        <label for="triggerKey">Trigger Key</label>
+        <label for="triggerKey">Trigger Method</label>
         <select id="triggerKey" class="trigger-select">
           <option value="doubleClick">Double Click</option>
           <option value="rightClick">Right Click</option>

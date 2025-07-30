@@ -1,5 +1,8 @@
 let selectedText = '';
 let triggerMethod = 'doubleClick';
+let lastSelectedText = ''; // Store the last valid selection
+let doubleClickTimeout = null; // For handling double-click timing
+let isDoubleClicking = false; // Track double-click state
 
 // Create the popup container
 const popup = document.createElement('div');
@@ -22,18 +25,84 @@ chrome.storage.local.get(['triggerKey'], function(result) {
   }
 });
 
+// Function to clear text selection
+function clearSelection() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}
+
+// Function to get current selection text
+function getCurrentSelection() {
+  if (window.getSelection) {
+    return window.getSelection().toString().trim();
+  } else if (document.selection) {
+    return document.selection.createRange().text.trim();
+  }
+  return '';
+}
+
 // Handle text selection
 document.addEventListener('mouseup', function(e) {
-  const text = window.getSelection().toString().trim();
-  if (text) {
-    selectedText = text;
+  if (!isDoubleClicking) {
+    const text = getCurrentSelection();
+    if (text) {
+      selectedText = text;
+      lastSelectedText = text; // Store the last valid selection
+    }
   }
 });
 
 // Handle different trigger methods
 document.addEventListener('dblclick', function(e) {
-  if (triggerMethod === 'doubleClick' && selectedText) {
-    analyzeText();
+  if (triggerMethod === 'doubleClick') {
+    e.preventDefault(); // Prevent default double-click behavior
+    isDoubleClicking = true;
+    
+    // Temporarily prevent text selection
+    document.body.classList.add('truthmark-no-select');
+    
+    // Clear any selection that might have been created by double-click
+    clearSelection();
+    
+    // Use the last valid selection instead of current selection
+    if (lastSelectedText) {
+      selectedText = lastSelectedText;
+      analyzeText();
+    } else {
+      // Fallback: try to get current selection after a brief delay
+      setTimeout(() => {
+        const currentText = getCurrentSelection();
+        if (currentText) {
+          selectedText = currentText;
+          analyzeText();
+        }
+      }, 10);
+    }
+    
+    // Reset double-click state and remove no-select class after a brief delay
+    setTimeout(() => {
+      document.body.classList.remove('truthmark-no-select');
+      isDoubleClicking = false;
+    }, 100);
+  }
+});
+
+// Alternative approach: Handle double-click with timeout
+document.addEventListener('mousedown', function(e) {
+  if (triggerMethod === 'doubleClick') {
+    // Clear any existing timeout
+    if (doubleClickTimeout) {
+      clearTimeout(doubleClickTimeout);
+    }
+    
+    // Set a timeout to check for double-click
+    doubleClickTimeout = setTimeout(() => {
+      // This is a single click, not a double click
+      doubleClickTimeout = null;
+    }, 300); // 300ms is typical double-click threshold
   }
 });
 
@@ -53,18 +122,6 @@ document.addEventListener('click', function(e) {
 async function analyzeText() {
   if (!selectedText) return;
 
-  // Check if API key exists
-  const { apiKey } = await chrome.storage.local.get(['apiKey']);
-  if (!apiKey) {
-    showPopup(`
-      <div class="truthmark-error">
-        <h3>Error</h3>
-        <p>Please set your API key in the extension settings first.</p>
-      </div>
-    `);
-    return;
-  }
-
   // Show loading state
   showPopup(`
     <div class="truthmark-loading">
@@ -78,8 +135,7 @@ async function analyzeText() {
   // Send message to background script
   chrome.runtime.sendMessage({
     action: 'analyzeText',
-    text: selectedText,
-    apiKey: apiKey
+    text: selectedText
   }, function(response) {
     if (response.error) {
       showPopup(`
