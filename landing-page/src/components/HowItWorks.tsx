@@ -19,7 +19,7 @@ const steps = [
   {
     icon: <Shield className="h-6 w-6 text-amber-500" />,
     title: "AI Analysis",
-    description: "TruthMark processes the claim using Perplexity SONAR API for verification.",
+    description: "TruthMark processes the claim using our advanced AI verification service.",
     color: "bg-amber-50",
     borderColor: "border-amber-200"
   },

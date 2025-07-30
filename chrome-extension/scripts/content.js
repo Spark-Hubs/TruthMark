@@ -53,18 +53,6 @@ document.addEventListener('click', function(e) {
 async function analyzeText() {
   if (!selectedText) return;
 
-  // Check if API key exists
-  const { apiKey } = await chrome.storage.local.get(['apiKey']);
-  if (!apiKey) {
-    showPopup(`
-      <div class="truthmark-error">
-        <h3>Error</h3>
-        <p>Please set your API key in the extension settings first.</p>
-      </div>
-    `);
-    return;
-  }
-
   // Show loading state
   showPopup(`
     <div class="truthmark-loading">
@@ -78,8 +66,7 @@ async function analyzeText() {
   // Send message to background script
   chrome.runtime.sendMessage({
     action: 'analyzeText',
-    text: selectedText,
-    apiKey: apiKey
+    text: selectedText
   }, function(response) {
     if (response.error) {
       showPopup(`

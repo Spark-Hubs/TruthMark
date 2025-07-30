@@ -84,7 +84,7 @@ const Privacy: React.FC = () => {
               
               <div className="mt-6 pt-6 border-t border-gray-100">
                 <p className="text-sm text-gray-500">
-                  We use the Perplexity SONAR API for verification, which adheres to strict privacy and data protection standards. For more information, view our full privacy policy.
+                  We use our own AI-powered verification service that adheres to strict privacy and data protection standards. For more information, view our full privacy policy.
                 </p>
               </div>
             </div>

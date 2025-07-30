@@ -1,134 +1,71 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'analyzeText') {
-    analyzeText(request.text, request.apiKey)
+    analyzeText(request.text)
       .then(result => sendResponse({ result }))
       .catch(error => sendResponse({ error: error.message }));
     return true; // Required for async response
   }
 });
 
-async function analyzeText(text, apiKey) {
+async function analyzeText(text) {
   try {
     if (!text || text.trim().length === 0) {
       throw new Error('Please select some text to analyze');
     }
 
-    if (!apiKey) {
-      throw new Error('Please set your Perplexity API key in the extension settings');
-    }
-
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const response = await fetch('https://piglet-big-snail.ngrok-free.app/api/full-analysis', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'sonar',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a fact-checking assistant. Your task is to analyze text and return a JSON object with the following EXACT structure:
-
-{
-  "truthScore": 75,  // A number between 0-100 indicating truthfulness
-  "verdict": "true", // Must be one of: "true", "false", "mixed", "unverifiable"
-  "confidence": "high", // Must be one of: "high", "medium", "low"
-  "analysis": "Detailed explanation of the analysis...",
-  "sources": ["Source 1", "Source 2"], // Array of sources
-  "context": "Additional context if needed" // Optional context
-}
-
-IMPORTANT:
-1. Return ONLY the JSON object, no additional text
-2. All fields must be present
-3. truthScore must be a number between 0-100
-4. verdict must be one of the specified values
-5. confidence must be one of the specified values
-6. analysis must be a string
-7. sources must be an array of strings
-8. context must be a string`
-          },
-          {
-            role: 'user',
-            content: `Analyze this text for truthfulness and return a JSON object with the exact structure specified above: "${text}"`
-          }
-        ],
-        temperature: 0.2,
-        max_tokens: 1000
+        text: text
       })
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error('API Error:', errorData);
-      if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your Perplexity API key in the extension settings.');
-      }
-      throw new Error(errorData.error?.message || 'API request failed');
+      throw new Error(errorData.detail || 'API request failed');
     }
 
     const data = await response.json();
     console.log('API Response:', data);
 
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid API response format');
-    }
-
-    const content = data.choices[0].message.content;
-    console.log('Raw Content:', content);
-
-    // Try to extract JSON from the response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error('No JSON found in content:', content);
-      throw new Error('Could not parse the analysis result');
-    }
-
-    let result;
-    try {
-      result = JSON.parse(jsonMatch[0]);
-      console.log('Parsed Result:', JSON.stringify(result, null, 2));
-    } catch (e) {
-      console.error('JSON Parse Error:', e);
-      console.error('Failed to parse:', jsonMatch[0]);
-      throw new Error('Invalid JSON format in response');
-    }
-
     // Validate required fields
     const requiredFields = ['truthScore', 'verdict', 'confidence', 'analysis'];
     const missingFields = requiredFields.filter(field => {
-      const value = result[field];
+      const value = data[field];
       return value === undefined || value === null || value === '';
     });
     
     if (missingFields.length > 0) {
       console.error('Missing fields:', missingFields);
-      console.error('Current result:', JSON.stringify(result, null, 2));
+      console.error('Current result:', JSON.stringify(data, null, 2));
       throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
     }
 
     // Validate field types
-    if (typeof result.truthScore !== 'number' || result.truthScore < 0 || result.truthScore > 100) {
-      console.error('Invalid truthScore:', result.truthScore);
+    if (typeof data.truthScore !== 'number' || data.truthScore < 0 || data.truthScore > 100) {
+      console.error('Invalid truthScore:', data.truthScore);
       throw new Error('Invalid truthScore value');
     }
 
-    if (!['true', 'false', 'mixed', 'unverifiable'].includes(result.verdict)) {
-      console.error('Invalid verdict:', result.verdict);
+    if (!['true', 'false', 'mixed', 'unverifiable'].includes(data.verdict)) {
+      console.error('Invalid verdict:', data.verdict);
       throw new Error('Invalid verdict value');
     }
 
-    if (!['high', 'medium', 'low'].includes(result.confidence)) {
-      console.error('Invalid confidence:', result.confidence);
+    if (!['high', 'medium', 'low'].includes(data.confidence)) {
+      console.error('Invalid confidence:', data.confidence);
       throw new Error('Invalid confidence value');
     }
 
     // Ensure optional fields exist
-    if (!result.sources) result.sources = [];
-    if (!result.context) result.context = '';
+    if (!data.sources) data.sources = [];
+    if (!data.context) data.context = '';
 
-    return formatResponse(result);
+    return formatResponse(data);
   } catch (error) {
     console.error('Error analyzing text:', error);
     throw new Error(error.message);
