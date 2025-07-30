@@ -9,6 +9,7 @@ A Chrome extension that provides instant fact-checking for any text you read onl
 - **Beautiful UI**: Clean, modern popup interface with detailed results
 - **AI-Powered**: Uses advanced AI to analyze text truthfulness
 - **No Setup Required**: Works out of the box with our hosted API
+- **Smart Text Selection**: Preserves your full text selection even when double-clicking
 
 ## How It Works
 
@@ -21,6 +22,26 @@ A Chrome extension that provides instant fact-checking for any text you read onl
    - Detailed analysis
    - Sources (when available)
    - Additional context
+
+## Text Selection Fix
+
+The extension includes a smart solution for the common browser issue where double-clicking on selected text only selects a single word instead of preserving your full selection. Here's how it works:
+
+### The Problem
+When you select multiple words with your mouse and then double-click, browsers typically override your selection with just the word under the cursor.
+
+### The Solution
+- **Preserves Original Selection**: The extension stores your full text selection before any double-click events
+- **Prevents Default Behavior**: Stops the browser from changing your selection during double-click
+- **Smart Analysis**: Uses your intended selection for analysis, not just the word under the cursor
+- **Cross-Browser Compatible**: Works across Chrome, Firefox, Safari, and Edge
+
+### Technical Implementation
+- Tracks text selection state using `mouseup` events
+- Prevents default double-click behavior with `preventDefault()`
+- Clears any unwanted selections created by double-click
+- Uses stored selection for analysis
+- Temporarily prevents text selection during double-click events
 
 ## Installation
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthMark Text Selection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .instructions {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>TruthMark Text Selection Test</h1>
+    
+    <div class="instructions">
+        <h3>How to test:</h3>
+        <ol>
+            <li>Select some text using your mouse (drag to select multiple words)</li>
+            <li>Double-click on the selected text</li>
+            <li>The extension should analyze the full selected text, not just a single word</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Paragraph 1</h2>
+        <p>
+            This is a test paragraph to demonstrate the text selection functionality. 
+            You can select any portion of this text using your mouse, and when you 
+            double-click on the selected text, it should analyze the entire selection 
+            rather than just selecting a single word. This is particularly useful for 
+            fact-checking longer passages of text.
+        </p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Paragraph 2</h2>
+        <p>
+            Here's another paragraph with different content to test the selection behavior. 
+            The key improvement is that when you select multiple words and then double-click, 
+            the system will preserve your original selection instead of being overridden by 
+            the browser's default double-click word selection behavior. This ensures that 
+            your intended text selection is maintained for analysis.
+        </p>
+    </div>
+
+    <div class="test-section">
+        <h2>Technical Details</h2>
+        <p>
+            The solution works by:
+            <ul>
+                <li>Storing the last valid text selection in a variable</li>
+                <li>Preventing the default double-click behavior</li>
+                <li>Clearing any selection created by the double-click</li>
+                <li>Using the stored selection for analysis</li>
+                <li>Temporarily preventing text selection during double-click events</li>
+            </ul>
+        </p>
+    </div>
+
+    <script>
+        // Simple demonstration of the selection behavior
+        let lastSelectedText = '';
+        let isDoubleClicking = false;
+
+        function getCurrentSelection() {
+            if (window.getSelection) {
+                return window.getSelection().toString().trim();
+            } else if (document.selection) {
+                return document.selection.createRange().text.trim();
+            }
+            return '';
+        }
+
+        function clearSelection() {
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            } else if (document.selection) {
+                document.selection.empty();
+            }
+        }
+
+        // Track text selection
+        document.addEventListener('mouseup', function(e) {
+            if (!isDoubleClicking) {
+                const text = getCurrentSelection();
+                if (text) {
+                    lastSelectedText = text;
+                    console.log('Text selected:', text);
+                }
+            }
+        });
+
+        // Handle double-click
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            isDoubleClicking = true;
+            
+            clearSelection();
+            
+            if (lastSelectedText) {
+                console.log('Analyzing text:', lastSelectedText);
+                alert('Would analyze: ' + lastSelectedText);
+            }
+            
+            setTimeout(() => {
+                isDoubleClicking = false;
+            }, 100);
+        });
+    </script>
+</body>
+</html> 
