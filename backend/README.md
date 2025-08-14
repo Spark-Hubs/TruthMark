@@ -1,6 +1,6 @@
 # Backend Service
 
-Bu proje, Brave Search API kullanarak haber verilerini çeken ve haberlerin detaylarını scraping ile zenginleştiren FastAPI tabanlı bir backend servisidir.
+Bu proje, Google Search API kullanarak haber verilerini çeken ve haberlerin detaylarını scraping ile zenginleştiren FastAPI tabanlı bir backend servisidir.
 
 ---
 
@@ -8,7 +8,7 @@ Bu proje, Brave Search API kullanarak haber verilerini çeken ve haberlerin deta
 
 - **Python 3.12+**
 - **FastAPI**: Hızlı ve modern API geliştirme çatısı
-- **HTTPX**: Asenkron HTTP istemcisi, Brave API çağrıları ve scraping için kullanılır
+- **HTTPX**: Asenkron HTTP istemcisi, Google API çağrıları ve scraping için kullanılır
 - **BeautifulSoup4**: HTML parsing ve scraping işlemleri için
 - **Pydantic**: Veri doğrulama ve şema tanımlama için
 - **Uvicorn**: ASGI server, uygulamanın çalıştırılması için
@@ -26,9 +26,9 @@ backend/
 │   ├── core/
 │   │   └── config.py          # Ortam değişkenleri ve konfigürasyon
 │   ├── schemas/
-│   │   └── brave_news.py      # Pydantic modelleri (response ve request şemaları)
+│   │   └── search_news.py     # Pydantic modelleri (response ve request şemaları)
 │   ├── services/
-│   │   └── brave_news.py      # Brave API çağrıları ve scraping servisleri
+│   │   └── search_news.py     # Google API çağrıları ve scraping servisleri
 │   ├── main.py                # FastAPI uygulaması giriş noktası
 ├── Makefile                   # Makefile komutları (geliştirme ve test için)
 ├── pyproject.toml             # Proje bağımlılıkları ve yapılandırma
@@ -41,10 +41,10 @@ backend/
 
 ### 1. Ortam Değişkenlerini Ayarlayın
 
-`.env` dosyanıza Brave API anahtarınızı ekleyin:
+`.env` dosyanıza Google API anahtarınızı ekleyin:
 
 ```env
-BRAVE_API_KEY=your_api_key_here
+GOOGLE_API_KEY=your_api_key_here
 ```
 
 ### 2. Bağımlılıkları Yükleyin
@@ -69,7 +69,7 @@ GET /news?q=arama_kelimesi
 
 ## Özellikler
 
-- **Asenkron Haber Çekme**: Brave Search API ile güncel haberleri asenkron olarak çekme
+- **Asenkron Haber Çekme**: Google Search API ile güncel haberleri asenkron olarak çekme
 - **İçerik Zenginleştirme**: Haber içeriklerini scraping ile detaylandırma (HTML parsing ile metin çekme)
 - **Veri Doğrulama**: Sağlam Pydantic modelleri ile veri doğrulama ve otomatik dökümantasyon
 - **Modüler Yapı**: Basit ve modüler proje yapısı sayesinde kolay genişletilebilirlik

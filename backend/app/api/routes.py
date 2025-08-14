@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.brave_news import UserInput
-from app.services.brave_news import (
+from app.schemas.search_news import UserInput
+from app.services.search_news import (
     generate_search_query,
-    fetch_brave_news,
+    fetch_google_news,
     parse_analysis_response,
     perform_ai_analysis,
 )
@@ -27,7 +27,7 @@ async def full_analysis(user_input: UserInput):
         else:
             search_query = user_input.text
 
-        news_response = await fetch_brave_news(search_query)
+        news_response = await fetch_google_news(search_query)
 
         descriptions = [
             item.description for item in news_response.results if item.description

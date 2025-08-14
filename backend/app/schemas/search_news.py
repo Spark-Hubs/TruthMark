@@ -8,7 +8,7 @@ class NewsResult(BaseModel):
     description: Optional[str]
 
 
-class BraveNewsResponse(BaseModel):
+class GoogleNewsResponse(BaseModel):
     results: List[NewsResult]
 
 

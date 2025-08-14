@@ -2,7 +2,7 @@ import ast
 import json
 import httpx
 from app.core.config import settings
-from app.schemas.brave_news import BraveNewsResponse
+from app.schemas.search_news import GoogleNewsResponse
 
 
 async def generate_search_query(text: str) -> str:
@@ -36,7 +36,7 @@ async def generate_search_query(text: str) -> str:
         return data["choices"][0]["message"]["content"]
 
 
-async def fetch_brave_news(query: str) -> BraveNewsResponse:
+async def fetch_google_news(query: str) -> GoogleNewsResponse:
     params = {
         "q": query,
         "search_lang": "tr",
@@ -46,12 +46,12 @@ async def fetch_brave_news(query: str) -> BraveNewsResponse:
     }
 
     headers = {
-        "x-subscription-token": settings.brave_api_key,
+        "x-subscription-token": settings.google_api_key,
     }
 
     async with httpx.AsyncClient(timeout=settings.ai_timeout) as client:
         response = await client.get(
-            settings.brave_news_api_url, params=params, headers=headers
+            settings.google_news_api_url, params=params, headers=headers
         )
         response.raise_for_status()
         data = response.json()
@@ -65,7 +65,7 @@ async def fetch_brave_news(query: str) -> BraveNewsResponse:
                 "description": item.get("description"),
             }
         )
-    return BraveNewsResponse(results=results)
+    return GoogleNewsResponse(results=results)
 
 
 def parse_analysis_response(raw_response: str) -> dict:
