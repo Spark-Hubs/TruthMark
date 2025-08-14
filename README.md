@@ -30,6 +30,10 @@ TruthMark, günümüzün bilgi kirliliği sorununa teknolojik bir çözüm sunar
   <img src="https://github.com/user-attachments/assets/50937ecd-e91f-49f1-baaa-8661436f3824" width="200"/>
 </div>
 
+## Proje diaqrami
+![WhatsApp Image 2025-08-14 at 21 17 48](https://github.com/user-attachments/assets/42ffdbc4-318e-4349-910d-342081e3010e)
+
+
 ## Gelişim sürecinde karşılaşılan zorluklar ve çözümleri
 
 Kullandığımız LLM modeli, küçük bir sunucu üzerinde çalıştığı için boyut olarak küçük bir modeldir.
