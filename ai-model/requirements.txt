@@ -1,0 +1,11 @@
+torch 
+packaging 
+trl 
+datasets 
+transformers 
+unsloth 
+bitsandbytes 
+accelerate 
+peft 
+triton 
+xformers
