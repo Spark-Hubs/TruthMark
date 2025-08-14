@@ -21,6 +21,37 @@ TruthMark, günümüzün bilgi kirliliği sorununa teknolojik bir çözüm sunar
 3. **Kaynak Kontrolü**: Bilgiler güncel kaynaklardan kontrol edilir ve doğrulanır
 4. **Anında Sonuç**: Saniyeler içinde detaylı analiz sonucu alırsınız
 
+## Ölçümlenme sonuçları
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="https://github.com/user-attachments/assets/95d60ede-4b83-4f88-9af8-b6d9a849eb10" width="200"/>
+  <img src="https://github.com/user-attachments/assets/8da92acd-ab7e-4d2f-9b62-dc8ae5e3b596" width="200"/>
+  <img src="https://github.com/user-attachments/assets/aed2c034-ab82-4068-aa04-8ab890bf2af7" width="200"/>
+  <img src="https://github.com/user-attachments/assets/50937ecd-e91f-49f1-baaa-8661436f3824" width="200"/>
+</div>
+
+## Gelişim sürecinde karşılaşılan zorluklar ve çözümleri
+
+Kullandığımız LLM modeli, küçük bir sunucu üzerinde çalıştığı için boyut olarak küçük bir modeldir.
+Modelin performansını artırmak amacıyla _fine-tuning_ yapmamız gerekmektedir.
+Ancak elimizde yeterli miktarda gerçek veri bulunmadığı için, _sentetik veri üretimi_ yöntemini tercih ettik.
+
+Veri üretim süreci şu şekilde ilerlemektedir:
+
+1.⁠ ⁠*Web Scraping*
+
+- İlgili konularda web üzerinden veri toplanır.
+
+2.⁠ ⁠*Veri Dönüşümü (Synthetic Data Generation)*
+
+- Toplanan ham veriler, GPT ve Claude gibi yapay zeka araçlarına gönderilerek _sentetik veriye_ dönüştürülür.
+
+3.⁠ ⁠*Veri Yapılandırma*
+
+- Üretilen veriler, tarafımızca belirlenen _özel bir veri yapısına (structure)_ oturtulur.
+
+Bu süreç sonunda elde edilen veriler, LLM modelimizin _fine-tuning_ aşamasında kullanılmaktadır.
+
 ## 📁 Proje Yapısı
 
 ```
@@ -49,9 +80,13 @@ Her bileşen için detaylı teknik bilgiler ve kurulum talimatları:
 
 ### Geliştiriciler İçin
 
-1. Projeyi klonlayın: `git clone https://github.com/your-username/truthmark.git`
+1. Projeyi klonlayın: `git clone https://github.com/Spark-Hubs/Teknofest2025-TruthMark.git`
 2. Backend servisi için: [backend/README.md](backend/README.md) talimatlarını takip edin
 3. Chrome eklentisi için: [chrome-extension/README.md](chrome-extension/README.md) talimatlarını takip edin
+
+## Veri setimiz
+
+[ai-model/fine-tuning-dataset.jsonl](ai-model/fine-tuning-dataset.jsonl)
 
 ## 🌍 Dil Desteği
 
