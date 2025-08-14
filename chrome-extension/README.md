@@ -28,15 +28,18 @@ A Chrome extension that provides instant fact-checking for any text you read onl
 The extension includes a smart solution for the common browser issue where double-clicking on selected text only selects a single word instead of preserving your full selection. Here's how it works:
 
 ### The Problem
+
 When you select multiple words with your mouse and then double-click, browsers typically override your selection with just the word under the cursor.
 
 ### The Solution
+
 - **Preserves Original Selection**: The extension stores your full text selection before any double-click events
 - **Prevents Default Behavior**: Stops the browser from changing your selection during double-click
 - **Smart Analysis**: Uses your intended selection for analysis, not just the word under the cursor
 - **Cross-Browser Compatible**: Works across Chrome, Firefox, Safari, and Edge
 
 ### Technical Implementation
+
 - Tracks text selection state using `mouseup` events
 - Prevents default double-click behavior with `preventDefault()`
 - Clears any unwanted selections created by double-click
@@ -69,11 +72,13 @@ The extension will be available on the Chrome Web Store once published.
 ### API Integration
 
 The extension connects to our FastAPI backend service at:
+
 ```
-https://piglet-big-snail.ngrok-free.app/api/full-analysis
+http://localhost:8000/api/full-analysis
 ```
 
 **Request Format:**
+
 ```json
 {
   "text": "Text to analyze"
@@ -81,6 +86,7 @@ https://piglet-big-snail.ngrok-free.app/api/full-analysis
 ```
 
 **Response Format:**
+
 ```json
 {
   "truthScore": 20,
@@ -105,6 +111,7 @@ You can choose how to activate the analysis:
 ### Settings
 
 Access settings by clicking the TruthMark icon in your toolbar. You can:
+
 - Change the trigger method
 - View usage instructions
 
@@ -153,6 +160,7 @@ Use the included `test-selection.html` file to test the text selection functiona
 ### Debug Mode
 
 To enable debug mode:
+
 1. Open Chrome DevTools
 2. Go to the Console tab
 3. Look for TruthMark-related log messages
@@ -171,4 +179,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For issues or questions, please open an issue on GitHub. 
+For issues or questions, please open an issue on GitHub.
