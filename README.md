@@ -52,6 +52,34 @@ Veri üretim süreci şu şekilde ilerlemektedir:
 
 Bu süreç sonunda elde edilen veriler, LLM modelimizin _fine-tuning_ aşamasında kullanılmaktadır.
 
+## Gereksinimler
+
+TruthMark, Türkçe ve İngilizce metinlerin doğruluğunu kontrol eden, Chrome eklentisi + backend API yapısında çalışan bir platformdur. 
+Sistem, gerçek zamanlı web scraping ile güvenilir kaynaklardan veri toplar ve LLM tabanlı analiz yapar.
+
+### 1. Donanım Gereksinimleri
+| Ortam            | Minimum                  | Önerilen                     | Açıklama |
+|------------------|--------------------------|-------------------------------|----------|
+| **Production**   | 4 vCPU, 8GB RAM, 50GB SSD | 8 vCPU, 16GB RAM, 100GB SSD    | Yalnızca scraping + API servisleri çalışır, GPU gerekmez |
+| **Fine-Tuning**  | RTX 3060 (12GB) GPU       | RTX 3090 / A100 (40GB) GPU     | Sentetik + gerçek veri ile offline model eğitimi |
+| **Depolama**     | 50GB SSD                  | 200GB NVMe SSD                 | Veri geçmişi + scraping logları |
+
+### 2. Dataset Gereksinimleri
+| Model Boyutu     | Minimum Veri (örnek sayısı) | Açıklama |
+|------------------|----------------------------|--------------|
+| Küçük     | 1,000–10,000                    | Türkçe + İngilizce karışık |
+| Orta       | 10,000–50,000                             | Daha geniş konu çeşitliliği gerekir |
+| Büyük    | 50,000+                           | Çoklu dil ve çok kaynaklı veri |
+
+### 3. Operasyonel Gereksinimler
+- **Scraping Frekansı:** 1–3 saatte bir veri güncelleme
+- **Dil Desteği:** Türkçe (optimizasyonlu), İngilizce
+- **Veri Kaynakları:** Fact-check siteleri, haber ajansları, resmi açıklamalar
+- **Güncelleme Süreci:**  
+  - Günlük scraping + veri temizleme  
+  - Haftalık LoRA/incremental fine-tuning  
+  - Aylık model değerlendirme ve iyileştirme
+  - 
 ## 📁 Proje Yapısı
 
 ```
